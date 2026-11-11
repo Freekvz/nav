@@ -23,7 +23,7 @@ assign turncost = if junction=roundabout then 0 else 40
 assign initialclassifier = if route=ferry then 1 else 0
 assign initialcost = if route=ferry then 20000 else 0
 
-assign ispaved = or surface= surface=paved|asphalt|concrete|paving_stones|sett|concrete:plates|concrete:lanes|metal|wood|compacted
+assign ispaved = or surface= surface=paved|asphalt|concrete|paving_stones|sett|metal|wood|compacted
 
 assign isbikepath = or highway=cycleway and highway=path bicycle=designated
 assign isfootish = highway=footway|pedestrian|steps|bridleway|corridor|platform|construction|proposed|abandoned|raceway|busway|via_ferrata|elevator
@@ -42,8 +42,8 @@ assign mvexplicit = or motor_vehicle=yes|designated|destination|permissive
                        access=yes|designated|destination|permissive
 
 assign mopedaccess =
-  if moped=yes|designated|permissive|destination then true
-  else if moped=no|private|agricultural|permit then false
+  if moped=yes|designated then true
+  else if moped=no then false
   else if route=ferry then true
   else if highway=motorway|motorway_link|trunk|trunk_link then false
   else if motorroad=yes then false
@@ -54,7 +54,7 @@ assign mopedaccess =
   else if isroad then mvaccess
   else false
 
-assign isdestination = or access=destination or motor_vehicle=destination or vehicle=destination moped=destination
+assign isdestination = or access=destination or motor_vehicle=destination vehicle=destination
 
 assign onewaypenalty =
   if ( if reversedirection=yes then
