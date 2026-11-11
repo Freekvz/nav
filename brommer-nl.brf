@@ -56,11 +56,14 @@ assign mopedaccess =
 
 assign isdestination = or access=destination or motor_vehicle=destination vehicle=destination
 
-assign onewaypenalty =
-  if ( if reversedirection=yes then
-         ( if oneway= then junction=roundabout else oneway=yes|true|1 )
-       else oneway=-1 )
-  then 10000 else 0
+assign onewaypenalty
+       switch switch reversedirection=yes
+                     switch oneway=
+                            junction=roundabout
+                            or oneway=yes or oneway=true oneway=1
+                     oneway=-1
+              10000
+              0.0
 
 assign isfastroad = maxspeed=70|80|90|100|110|120|130|rural
 assign issidepathroad = or isfastroad maxspeed=60
@@ -71,12 +74,15 @@ assign sidepathhint = or moped=use_sidepath
                       or cycleway:right=track|sidepath|opposite_track
                          cycleway:left=track|sidepath|opposite_track
 
+assign isfietsstraat = or cyclestreet=yes bicycle_road=yes
+assign sidepathbad = and issidepathroad sidepathhint
+
 assign basecost =
   if moped=use_sidepath then 20
-  else if and issidepathroad sidepathhint then 25
+  else if sidepathbad then 25
   else if isbikepath then ( if ispaved then 1.25 else 4 )
   else if highway=track|path then ( if ispaved then 2 else 6 )
-  else if or cyclestreet=yes bicycle_road=yes then 1.5
+  else if isfietsstraat then 1.5
   else if highway=primary|primary_link|secondary|secondary_link|tertiary|tertiary_link then ( if isfastroad then 1.35 else 1.0 )
   else if highway=unclassified then ( if isfastroad then 1.35 else 1.05 )
   else if highway=residential|road then 1.4
@@ -85,9 +91,11 @@ assign basecost =
   else if route=ferry then 5.67
   else 2
 
+assign nomoped = not mopedaccess
+assign destfactor = if isdestination then 3 else 1
 assign costfactor =
-  if not mopedaccess then 10000
-  else add onewaypenalty multiply basecost ( if isdestination then 3 else 1 )
+  if nomoped then 10000
+  else add onewaypenalty multiply basecost destfactor
 
 # voice hint classification
 assign isresidentialorliving = or highway=residential|living_street living_street=yes
