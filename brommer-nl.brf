@@ -63,6 +63,7 @@ assign onewaypenalty =
   then 10000 else 0
 
 assign isfastroad = maxspeed=70|80|90|100|110|120|130|rural
+assign issidepathroad = or isfastroad maxspeed=60
 assign sidepathhint = or moped=use_sidepath
                       or bicycle=use_sidepath|no
                       or cycleway=track|opposite_track
@@ -72,7 +73,7 @@ assign sidepathhint = or moped=use_sidepath
 
 assign basecost =
   if moped=use_sidepath then 20
-  else if and isfastroad sidepathhint then 12
+  else if and issidepathroad sidepathhint then 25
   else if isbikepath then ( if ispaved then 1.25 else 4 )
   else if highway=track|path then ( if ispaved then 2 else 6 )
   else if or cyclestreet=yes bicycle_road=yes then 1.5
